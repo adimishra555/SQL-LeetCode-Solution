@@ -38,3 +38,26 @@ def invalid_tweets(tweets: pd.DataFrame) -> pd.DataFrame:
     invalid_tweetsdf = tweets[tweets['content'].str.len() >15]
     resdf= invalid_tweetsdf[['tweet_id']]
     return resdf
+
+
+# Replace Employee ID With The Unique Identifier
+import pandas as pd
+def replace_employee_id(employees: pd.DataFrame, employee_uni: pd.DataFrame) -> pd.DataFrame:
+    merged_table = employees.merge(employee_uni, on='id', how = 'left')
+    res = merged_table[['unique_id', 'name']]
+    return res
+
+# Product Sales Analysis I
+def sales_analysis(sales: pd.DataFrame, product: pd.DataFrame) -> pd.DataFrame:
+    return pd.merge(sales, product, on='product_id') [['product_name', 'year','price']]
+
+# Customer Who Visited but Did Not Make Any Transactions
+import pandas as pd
+def find_customers(visits: pd.DataFrame, transactions: pd.DataFrame) -> pd.DataFrame:
+    # df = visits.merge(transactions, how = 'left')
+    # df = df[df['transaction_id'].isna()].groupby(['customer_id'], as_index=False).agg(count_no_trans =('visit_id', 'nunique'))
+    # return df
+    df = visits.merge(transactions, how='left')
+    result = df[df['transaction_id'].isna()].groupby('customer_id', as_index=False)['visit_id'].nunique().rename(columns={'visit_id': 'count_no_trans'})
+    
+    return result
