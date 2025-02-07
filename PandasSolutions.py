@@ -61,3 +61,30 @@ def find_customers(visits: pd.DataFrame, transactions: pd.DataFrame) -> pd.DataF
     result = df[df['transaction_id'].isna()].groupby('customer_id', as_index=False)['visit_id'].nunique().rename(columns={'visit_id': 'count_no_trans'})
     
     return result
+
+
+# Rising Temperature
+import pandas as pd
+def rising_temperature(weather: pd.DataFrame) -> pd.DataFrame:
+    weather.sort_values(by = 'recordDate', inplace = True)
+    date_diff = weather['recordDate'].diff().dt.days
+    temp_diff = weather['temperature'].diff()
+    return weather[(date_diff==1) & (temp_diff > 0)][['id']]
+
+# Average Time of Process per Machine
+import pandas as pd
+def get_average_time(activity: pd.DataFrame) -> pd.DataFrame:
+    activity = activity.pivot(index=['machine_id', 'process_id'], columns='activity_type', values='timestamp')
+    activity['processing_time'] = activity['end'] - activity['start']
+    result = activity.groupby('machine_id')['processing_time'].mean().reset_index()
+    result['processing_time'] = result['processing_time'].round(3)
+    return result
+
+# Employee Bonus
+import pandas as pd
+def employee_bonus(employee: pd.DataFrame, bonus: pd.DataFrame) -> pd.DataFrame:
+    merged_df = employee.merge(bonus, on='empId', how='left')
+    result_df = merged_df[(merged_df['bonus'] < 1000) | (merged_df['bonus'].isna())]
+    result_df = result_df[['name', 'bonus']]
+    return result_df
+
