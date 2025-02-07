@@ -33,3 +33,33 @@ FROM Visits WHERE visit_id NOT IN (
     SELECT visit_id FROM Transactions
 )
 GROUP BY customer_id;
+
+-> Rising Temperature
+SELECT W1.id
+FROM Weather W1
+JOIN Weather W2 ON W1.recordDate = DATEADD(day, 1, W2.recordDate)
+WHERE W1.temperature > W2.temperature;
+
+
+-> Average Time of Process per Machine
+SELECT a1.machine_id ,
+ ROUND(AVG(a2.timestamp - a1.timestamp), 3) as processing_time
+ from Activity a1
+ join Activity a2
+ on a1.process_id = a2.process_id
+ and a1.machine_id = a2.machine_id
+ and a1.timestamp < a2.timestamp
+ group by a1.machine_id;
+
+-> Employee Bonus
+SELECT e.name, 
+    COALESCE(b.bonus, null) AS bonus  //if emp doesn't have a bonus, return null
+FROM 
+    Employee e
+LEFT JOIN 
+    Bonus b
+ON 
+    e.empId = b.empId
+WHERE 
+    b.bonus < 1000 OR b.bonus IS NULL;
+
