@@ -63,3 +63,24 @@ ON
 WHERE 
     b.bonus < 1000 OR b.bonus IS NULL;
 
+
+-> Managers with at Least 5 Direct Reports
+SELECT NAME FROM Employee WHERE id IN (
+    SELECT managerID FROM Employee GROUP BY managerID HAVING COUNT(*) >=5
+);
+
+-> Confirmation Rate
+SELECT  
+    s.user_id,
+    COALESCE(ROUND(CAST(COUNT(CASE WHEN c.action = 'confirmed' THEN 1 ELSE NULL END) AS FLOAT) / 
+                   NULLIF(COUNT(c.user_id), 0), 2), 0) AS confirmation_rate
+FROM  
+    Signups s
+LEFT JOIN  
+    Confirmations c
+ON  
+    s.user_id = c.user_id
+GROUP BY  
+    s.user_id
+ORDER BY  
+    s.user_id;
