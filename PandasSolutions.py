@@ -88,3 +88,22 @@ def employee_bonus(employee: pd.DataFrame, bonus: pd.DataFrame) -> pd.DataFrame:
     result_df = result_df[['name', 'bonus']]
     return result_df
 
+
+# Managers with at Least 5 Direct Reports
+import pandas as pd
+def find_managers(employee: pd.DataFrame) -> pd.DataFrame:
+    managers = employee.groupby('managerId', as_index=False).agg(
+        reporting=('id', 'count')
+    ).query('reporting >= 5')['managerId']  
+    return employee[employee['id'].isin(managers)][['name']]
+
+
+# Confirmation Rate
+import pandas as pd
+def confirmation_rate(signups: pd.DataFrame, confirmations: pd.DataFrame) -> pd.DataFrame:
+    total_requests = confirmations.groupby("user_id").size()
+    confirmed_requests = confirmations[confirmations["action"] == "confirmed"].groupby("user_id").size()
+    confirmation_rate = (confirmed_requests / total_requests).round(2).fillna(0)
+    confirmation_rate_df = confirmation_rate.reset_index(name="confirmation_rate")
+    result = pd.merge(signups, confirmation_rate_df, on="user_id", how="left").fillna({"confirmation_rate": 0})
+    return result[["user_id", "confirmation_rate"]]
