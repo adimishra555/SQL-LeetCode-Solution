@@ -84,3 +84,32 @@ GROUP BY
     s.user_id
 ORDER BY  
     s.user_id;
+
+-> Not Boring Movies
+SELECT * FROM Cinema
+WHERE id%2 != 0 AND description != 'boring'
+ORDER BY rating DESC;
+
+
+-> Average Selling Price
+SELECT p.product_id, CAST(COALESCE(ROUND(SUM(p.price * u.units*1.00) / SUM(u.units), 2), 0) as float) AS average_price
+FROM Prices p
+LEFT JOIN UnitsSold u 
+    ON p.product_id = u.product_id
+    AND purchase_date BETWEEN start_date AND end_date
+GROUP BY p.product_id;
+
+
+-> Project Employees I
+SELECT p.project_id, ROUND(AVG(e.experience_years * 1.0), 2) AS average_years
+FROM Project p
+JOIN Employee e ON p.employee_id = e.employee_id
+GROUP BY p.project_id;
+
+-> Percentage of Users Attended a Contest
+SELECT r.contest_id, round(count(r.user_id) * 100.0 / (SELECT count(distinct u.user_id) FROM users u), 2) as percentage
+FROM register r
+left join users u on u.user_id = r.user_id
+GROUP BY contest_id
+ORDER BY percentage desc, contest_id;
+
