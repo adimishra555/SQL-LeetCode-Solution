@@ -107,3 +107,43 @@ def confirmation_rate(signups: pd.DataFrame, confirmations: pd.DataFrame) -> pd.
     confirmation_rate_df = confirmation_rate.reset_index(name="confirmation_rate")
     result = pd.merge(signups, confirmation_rate_df, on="user_id", how="left").fillna({"confirmation_rate": 0})
     return result[["user_id", "confirmation_rate"]]
+
+
+
+# Not Boring Movies
+import pandas as pd
+def not_boring_movies(cinema: pd.DataFrame) -> pd.DataFrame:
+    return (cinema[(cinema.id %2 == 1) &
+    (cinema.description != 'boring')]
+    .sort_values('rating', ascending = False)
+    )
+
+
+# Average Selling Price
+import pandas as pd
+def average_selling_price(prices: pd.DataFrame, units_sold: pd.DataFrame) -> pd.DataFrame:
+    df = pd.merge(prices, units_sold, on='product_id', how='left')
+    df = df[df.purchase_date.isna() | ((df.purchase_date >= df.start_date) & (df.purchase_date <= df.end_date))]
+    result = df.groupby('product_id').apply(lambda x: round((x['price'] * x['units']).sum() / x['units'].sum(), 2) if x['units'].sum() != 0 else 0).reset_index(name='average_price')
+    return result
+
+
+# Project Employees I
+import pandas as pd
+def project_employees_i(project: pd.DataFrame, employee: pd.DataFrame) -> pd.DataFrame:
+    merged_df = project.merge(employee, on="employee_id")
+    result = merged_df.groupby("project_id")["experience_years"].mean().round(2).reset_index()
+    result.rename(columns={"experience_years": "average_years"}, inplace=True)
+
+    return result
+
+
+# Percentage of Users Attended a Contest
+import pandas as pd
+def users_percentage(users: pd.DataFrame, register: pd.DataFrame) -> pd.DataFrame:
+    no_of_users = users['user_id'].count()
+    df = register.groupby('contest_id')['user_id'].nunique().reset_index()
+    df['percentage'] = round((df['user_id']/no_of_users)*100,2)
+    df.sort_values(by = ['percentage','contest_id'], ascending = (False,True), inplace = True)
+    return df[['contest_id','percentage']]
+
