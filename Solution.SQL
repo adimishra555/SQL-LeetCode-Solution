@@ -119,7 +119,7 @@ round(sum(iif (rating < 3, 100.0, 0)) / Count(rating), 2) as poor_query_percenta
 from Queries
 GROUP BY query_name HAVING query_name IS NOT NULL;
 
-Monthly Transactions I
+-> Monthly Transactions I
 SELECT format(trans_date, 'yyyy-MM') as month, country,
     COUNT(state) as trans_count,
     SUM(iif(state='approved', 1, 0)) as approved_count, 
