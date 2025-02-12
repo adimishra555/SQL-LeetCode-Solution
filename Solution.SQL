@@ -53,7 +53,7 @@ SELECT a1.machine_id ,
 
 -> Employee Bonus
 SELECT e.name, 
-    COALESCE(b.bonus, null) AS bonus  // if emp doesn't have a bonus, return null
+    COALESCE(b.bonus, null) AS bonus   --if emp doesn't have a bonus, return null
 FROM 
     Employee e
 LEFT JOIN 
