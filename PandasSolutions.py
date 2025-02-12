@@ -147,3 +147,26 @@ def users_percentage(users: pd.DataFrame, register: pd.DataFrame) -> pd.DataFram
     df.sort_values(by = ['percentage','contest_id'], ascending = (False,True), inplace = True)
     return df[['contest_id','percentage']]
 
+
+# Queries Quality and Percentage
+import pandas as pd
+def queries_stats(queries: pd.DataFrame) -> pd.DataFrame:
+    queries['quality'] = queries['rating'] / queries['position'] + 1e-10
+    queries['poor_query_percentage'] = queries.apply(lambda x: 100 if x['rating'] < 3 else 0, axis = 1)
+    return queries[['query_name', 'quality' ,'poor_query_percentage']].groupby(['query_name'], as_index = False) [['quality', 'poor_query_percentage']].mean().round(2)
+
+
+# Monthly Transactions I
+import pandas as pd
+def monthly_transactions(transactions: pd.DataFrame) -> pd.DataFrame:
+    transactions['month'] = transactions['trans_date'].dt.strftime('%Y-%m')
+    result = transactions.groupby(['month', 'country']).agg(
+        trans_count=('state', 'count'),
+        approved_count=('state', lambda x: (x == 'approved').sum()),
+        trans_total_amount=('amount', 'sum'),
+        approved_total_amount=('amount', lambda x: x[transactions['state'] == 'approved'].sum())
+    ).reset_index()
+
+    return result
+
+
