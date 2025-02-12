@@ -113,3 +113,17 @@ left join users u on u.user_id = r.user_id
 GROUP BY contest_id
 ORDER BY percentage desc, contest_id;
 
+-> Queries Quality and Percentage
+SELECT query_name, round(avg(1.0 * rating / position), 2) as quality,
+round(sum(iif (rating < 3, 100.0, 0)) / Count(rating), 2) as poor_query_percentage
+from Queries
+GROUP BY query_name HAVING query_name IS NOT NULL;
+
+Monthly Transactions I
+SELECT format(trans_date, 'yyyy-MM') as month, country,
+    COUNT(state) as trans_count,
+    SUM(iif(state='approved', 1, 0)) as approved_count, 
+    SUM(amount) as trans_total_amount,
+    SUM(iif(state='approved', amount, 0)) as approved_total_amount
+from Transactions group by format(trans_date, 'yyyy-MM'), country;
+
